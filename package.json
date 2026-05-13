@@ -1,0 +1,47 @@
+{
+  "name": "@anlora/mcp-agency-benchmarks",
+  "version": "1.0.0",
+  "description": "MCP server exposing publicly sourced OnlyFans agency operating economics — chatter cost models, total cost of ownership benchmarks, autonomous-vs-assisted threshold analysis, and competitor landscape data. All values from publicly cited industry sources.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "anlora-mcp": "src/index.js"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "anthropic",
+    "claude",
+    "onlyfans",
+    "agency",
+    "creator-economy",
+    "benchmarks",
+    "tco",
+    "anlora"
+  ],
+  "author": "Anlora <hello@meetanlora.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bullseyelimited/anlora-mcp.git"
+  },
+  "homepage": "https://meetanlora.com",
+  "bugs": {
+    "url": "https://github.com/bullseyelimited/anlora-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}
