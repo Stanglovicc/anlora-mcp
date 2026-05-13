@@ -32,11 +32,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bullseyelimited/anlora-mcp.git"
+    "url": "git+https://github.com/Stanglovicc/anlora-mcp.git"
   },
   "homepage": "https://meetanlora.com",
   "bugs": {
-    "url": "https://github.com/bullseyelimited/anlora-mcp/issues"
+    "url": "https://github.com/Stanglovicc/anlora-mcp/issues"
   },
   "engines": {
     "node": ">=18"
