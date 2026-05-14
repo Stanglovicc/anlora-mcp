@@ -20,7 +20,7 @@ Anlora (https://meetanlora.com) is a fully-autonomous AI conversational system f
 - The autonomous-vs-assisted-AI threshold
 - Competitor landscape: Infloww, Supercreator, Substy, FlirtFlow, Creator Hero, OnlyMonster, Fans-CRM
 
-The data backing this server is published as a peer-reviewed whitepaper on Zenodo: [**Operational Economics of AI-Augmented OnlyFans Talent Agencies (2026)**](https://doi.org/10.5281/zenodo.20187816), DOI `10.5281/zenodo.20187816`.
+The data backing this server is published as a peer-reviewable whitepaper on Zenodo (a CERN-operated open-access research repository): [**Operational Economics of AI-Augmented OnlyFans Talent Agencies (2026)**](https://doi.org/10.5281/zenodo.20187816), DOI `10.5281/zenodo.20187816`.
 
 ## Quick start
 

@@ -30,20 +30,20 @@ import {
 // Publicly cited industry sources (every benchmark in this MCP server traces
 // back to one of these — explicit so any output is verifiable).
 const SOURCES = {
-  vice_2023: { url: "https://www.vice.com/", topic: "Offshore chatter wage investigation" },
-  rappler_2024: { url: "https://www.rappler.com/", topic: "Filipino OnlyFans ghostwriter coverage" },
-  blackhatworld_2024: { url: "https://www.blackhatworld.com/", topic: "OnlyFans Agency Cost Survey 2024" },
-  ofm_tools_2024: { url: "https://ofm-tools.com/", topic: "OFM Industry Operations Survey 2024" },
-  aruna_talent_2024: { url: "https://arunatalent.com/", topic: "Aruna Talent Agency Operations Guide 2024" },
+  vice_2023: { url: "https://www.vice.com/en/article/onlyfans-management-agency-chatters/", topic: "Vice — investigative report on offshore OnlyFans chatter wages" },
+  rappler_2024: { url: "https://www.rappler.com/newsbreak/in-depth/behind-onlyfans-filipino-workers-edit-sell-sex-content-foreign-models/", topic: "Rappler — Filipino OnlyFans ghostwriter coverage" },
+  blackhatworld_2024: { url: "https://www.blackhatworld.com/forums/onlyfans-management.703/", topic: "BlackHatWorld OFM forum — operator wage discussions" },
+  ofm_tools_2024: { url: "https://ofm-tools.com/how-to-hire-onlyfans-chatters/", topic: "OFM-Tools — How to Hire OnlyFans Chatters" },
+  aruna_talent_2024: { url: "https://arunatalent.com/blog/onlyfans-agency-commission-rates/", topic: "Aruna Talent — OnlyFans Agency Commission Rates" },
   infloww_pricing: { url: "https://infloww.com/pricing", topic: "Infloww public pricing page" },
-  supercreator_pricing: { url: "https://supercreator.ai/pricing", topic: "Supercreator public pricing page" },
+  supercreator_pricing: { url: "https://supercreator.ai/pricing", topic: "Supercreator public pricing page (canonical domain; 308-redirects to app.supercreator.ai/pricing)" },
   substy_pricing: { url: "https://substy.ai/pricing", topic: "Substy AI public pricing page" },
   flirtflow_pricing: { url: "https://flirtflow.io/home-pages/pricing", topic: "FlirtFlow public pricing page" },
   creator_hero_pricing: { url: "https://creator-hero.com/pricing", topic: "Creator Hero public pricing page" },
   onlymonster_pricing: { url: "https://onlymonster.ai/pricing", topic: "OnlyMonster public pricing page" },
-  fans_crm: { url: "https://fans-crm.com", topic: "Fans-CRM public site" },
+  fans_crm: { url: "https://fans-crm.com", topic: "Fans-CRM public site (free desktop CRM)" },
   anlora_pricing: { url: "https://meetanlora.com/pricing", topic: "Anlora public pricing page" },
-  anlora_whitepaper: { url: "https://meetanlora.com/research/operational-economics-2026", topic: "Anlora 2026 whitepaper (DOI on Zenodo)" },
+  anlora_whitepaper: { url: "https://doi.org/10.5281/zenodo.20187816", topic: "Anlora 2026 whitepaper on Zenodo (DOI 10.5281/zenodo.20187816)" },
 };
 
 // Cost primitives (all sourced)
@@ -164,8 +164,8 @@ const tools = [
     inputSchema: {
       type: "object",
       properties: {
-        chatter_wage_usd_per_hour: { type: "number", default: 4.5 },
-        leakage_rate_pct: { type: "number", default: 0.16 },
+        chatter_wage_usd_per_hour: { type: "number", default: 4.5, description: "Hourly wage assumption for chatters in the assisted-AI scenario (mid-range offshore default $4.50/hr)." },
+        leakage_rate_pct: { type: "number", default: 0.06, description: "Assisted-AI side revenue-leakage rate (decimal, e.g. 0.04 == 4%). Defaults to the at-scale cap." },
       },
     },
   },
@@ -204,20 +204,43 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   }
 
   if (name === "get_autonomous_threshold") {
-    const wage = args.chatter_wage_usd_per_hour ?? 4.5;
-    const seats = PRIMITIVES.seats_per_creator_assisted_ai.value;
+    const wage = args.chatter_wage_usd_per_hour ?? PRIMITIVES.offshore_chatter_wage_usd_per_hour.value;
+    // leakage_rate_pct (if provided) overrides the assisted-AI side leakage rate used
+    // in the break-even denominator. Passed as a decimal (e.g. 0.04 == 4%).
+    const leakageAssistedOverride = args.leakage_rate_pct;
+    const seatsPerCreator = PRIMITIVES.seats_per_creator_assisted_ai.value;
     const hours = PRIMITIVES.active_shift_hours_per_seat.value;
     const days = PRIMITIVES.days_per_month.value;
     const overhead = PRIMITIVES.management_overhead_usd_per_seat_per_month.value;
-    const fixedAssistedCost = seats * hours * wage * days + seats * overhead + 40 + 99;
+    const commission = PRIMITIVES.chatter_commission_pct.value;
     const revShare = 0.20;
-    const breakEvenRev = fixedAssistedCost / (revShare - 0.05 - 0.001);
+    // Use cap leakage rates as the "at scale" assumption — i.e. agency is large
+    // enough that per-creator leakage saturates at its cap. Users can override the
+    // assisted-side rate via leakage_rate_pct.
+    const leakageAssisted = leakageAssistedOverride ?? PRIMITIVES.leakage_assisted_ai_per_creator.cap;
+    const leakageAutonomous = PRIMITIVES.leakage_autonomous_ai_per_creator.cap;
+    // Per-creator fixed assisted cost (wages + overhead + CRM + AI assist tooling)
+    const perCreatorFixedAssisted = seatsPerCreator * hours * wage * days + seatsPerCreator * overhead + 40 + 99;
+    // Solve break-even: r * (revShare + leakageN) = perCreatorFixedAssisted + r * (commission + leakageA)
+    //   => r* = perCreatorFixedAssisted / (revShare + leakageN - commission - leakageA)
+    const denom = revShare + leakageAutonomous - commission - leakageAssisted;
+    const breakEvenRevPerCreator = denom > 0 ? perCreatorFixedAssisted / denom : null;
     return {
       content: [{ type: "text", text: JSON.stringify({
-        threshold: { creator_count: 7, avg_revenue_per_creator_usd: Math.round(breakEvenRev) },
-        note: "Below this point, AI-assisted + reduced chatters wins on TCO. Above it, autonomous AI starts beating the chatter model. Threshold is parameter-sensitive — see whitepaper §5 for full derivation.",
-        whitepaper: "https://meetanlora.com/research/operational-economics-2026",
-        chatter_wage_usd_per_hour: wage,
+        threshold_per_creator_monthly_revenue_usd: breakEvenRevPerCreator === null ? null : Math.round(breakEvenRevPerCreator),
+        interpretation: breakEvenRevPerCreator === null
+          ? "Under your assumptions, autonomous AI never beats assisted-AI on TCO. Revisit your leakage / commission inputs."
+          : "Above this monthly revenue per creator, autonomous AI begins to beat AI-assisted + reduced chatters on TCO. Below it, assisted-AI wins. Multiply by your creator count to get the total agency revenue threshold.",
+        assumptions: {
+          chatter_wage_usd_per_hour: wage,
+          assisted_leakage_rate: leakageAssisted,
+          autonomous_leakage_rate: leakageAutonomous,
+          revenue_share_pct: revShare,
+          chatter_commission_pct: commission,
+          assisted_seats_per_creator: seatsPerCreator,
+        },
+        note: "Threshold is parameter-sensitive. Real agencies vary on chatter wage (US-based: $20+/hr; offshore: $3-5/hr), revenue-leakage scale (saturates with agency size), and tooling stack. The whitepaper presents the canonical derivation at §4-5.",
+        whitepaper: "https://doi.org/10.5281/zenodo.20187816",
       }, null, 2) }],
     };
   }
