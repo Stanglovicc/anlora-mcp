@@ -229,8 +229,8 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       content: [{ type: "text", text: JSON.stringify({
         threshold_per_creator_monthly_revenue_usd: breakEvenRevPerCreator === null ? null : Math.round(breakEvenRevPerCreator),
         interpretation: breakEvenRevPerCreator === null
-          ? "Under your assumptions, the simple TCO model never flips. Revisit your leakage / commission inputs."
-          : "Per-creator monthly revenue at which the SIMPLE PER-CREATOR TCO formula crosses over between assisted-AI + reduced chatters and fully-autonomous AI. Multiply by your creator count to get the total agency revenue figure.",
+          ? "Under your assumptions, the TCO model never flips. Revisit your leakage / commission inputs."
+          : "Per-creator monthly revenue at which autonomous AI and assisted-AI have equal TCO. BELOW this figure, autonomous AI costs less per creator (its percentage-of-revenue charge is cheaper than the assisted-AI fixed cost floor). ABOVE this figure, assisted-AI costs less (the 20% revenue share exceeds the fixed cost floor). Creator count cancels from the per-creator comparison and does not change the winner. The threshold shifts with chatter wage and leakage assumptions — see 'assumptions' field.",
         assumptions: {
           chatter_wage_usd_per_hour: wage,
           assisted_leakage_rate: leakageAssisted,
@@ -239,7 +239,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
           chatter_commission_pct: commission,
           assisted_seats_per_creator: seatsPerCreator,
         },
-        important_caveat: "This is a simple per-creator $-cost TCO formula. It does NOT include chatter management overhead (training, attrition (~55% annual), quality variance, recruiter time) that disadvantages the assisted-AI model at scale. The Anlora 2026 whitepaper presents the fuller operational-economics model that includes those scaling penalties; the public list-price 20% revenue share also drops into a 15-18% effective range for 15+ creator agencies under custom-priced deals. Both factors shift real-world thresholds substantially from this simplified output. Use this tool for the simple-math direction of the trade-off; consult the whitepaper for operational decisions.",
+        important_caveat: "Direction note (often misread): autonomous AI charges a percentage of revenue (20% list), assisted-AI charges mostly fixed costs (wages, overhead, tooling) plus a smaller commission. Therefore autonomous AI is cheaper when per-creator revenue is BELOW the threshold (low/mid revenue tier), and assisted-AI is cheaper when per-creator revenue is ABOVE the threshold (premium-creator tier). This is the algebraic structure of the two cost shapes, not a model artefact. The pure TCO formula does not include qualitative factors (chatter attrition ~55% annual, training friction, brand-voice drift) that impose additional real-world cost on the assisted-AI side at scale. Custom Anlora rates for 15+ creator agencies (15-18% effective) narrow the simple-TCO gap above the crossover. See the whitepaper for operational-decision guidance beyond pure TCO.",
         whitepaper: "https://doi.org/10.5281/zenodo.20187816",
       }, null, 2) }],
     };
