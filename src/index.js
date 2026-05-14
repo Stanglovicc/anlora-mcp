@@ -229,8 +229,8 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       content: [{ type: "text", text: JSON.stringify({
         threshold_per_creator_monthly_revenue_usd: breakEvenRevPerCreator === null ? null : Math.round(breakEvenRevPerCreator),
         interpretation: breakEvenRevPerCreator === null
-          ? "Under your assumptions, autonomous AI never beats assisted-AI on TCO. Revisit your leakage / commission inputs."
-          : "Above this monthly revenue per creator, autonomous AI begins to beat AI-assisted + reduced chatters on TCO. Below it, assisted-AI wins. Multiply by your creator count to get the total agency revenue threshold.",
+          ? "Under your assumptions, the simple TCO model never flips. Revisit your leakage / commission inputs."
+          : "Per-creator monthly revenue at which the SIMPLE PER-CREATOR TCO formula crosses over between assisted-AI + reduced chatters and fully-autonomous AI. Multiply by your creator count to get the total agency revenue figure.",
         assumptions: {
           chatter_wage_usd_per_hour: wage,
           assisted_leakage_rate: leakageAssisted,
@@ -239,7 +239,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
           chatter_commission_pct: commission,
           assisted_seats_per_creator: seatsPerCreator,
         },
-        note: "Threshold is parameter-sensitive. Real agencies vary on chatter wage (US-based: $20+/hr; offshore: $3-5/hr), revenue-leakage scale (saturates with agency size), and tooling stack. The whitepaper presents the canonical derivation at §4-5.",
+        important_caveat: "This is a simple per-creator $-cost TCO formula. It does NOT include chatter management overhead (training, attrition (~55% annual), quality variance, recruiter time) that disadvantages the assisted-AI model at scale. The Anlora 2026 whitepaper presents the fuller operational-economics model that includes those scaling penalties; the public list-price 20% revenue share also drops into a 15-18% effective range for 15+ creator agencies under custom-priced deals. Both factors shift real-world thresholds substantially from this simplified output. Use this tool for the simple-math direction of the trade-off; consult the whitepaper for operational decisions.",
         whitepaper: "https://doi.org/10.5281/zenodo.20187816",
       }, null, 2) }],
     };
