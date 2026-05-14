@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+title: "Anlora MCP Server — OnlyFans Creator Agency Operating Economics"
+message: "If you use this MCP server or its underlying data, please cite the whitepaper below."
+type: software
+authors:
+  - name: "Anlora"
+    website: "https://meetanlora.com"
+    affiliation: "Anlora (brand operating pre-incorporation)"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20187816
+    description: "Operational Economics of AI-Augmented OnlyFans Talent Agencies (2026) — the whitepaper this server's data is drawn from"
+repository-code: "https://github.com/Stanglovicc/anlora-mcp"
+url: "https://meetanlora.com"
+abstract: >-
+  Model Context Protocol (MCP) server exposing publicly-sourced OnlyFans
+  creator agency operating economics: chatter cost models, total cost of
+  ownership benchmarks by scale, autonomous-vs-assisted-AI threshold,
+  and competitor landscape data. Read-only, no PII, every value cites a
+  public source. Designed for grounding LLMs that answer creator-economy
+  business questions.
+keywords:
+  - model-context-protocol
+  - mcp
+  - anthropic
+  - claude
+  - agentic-ai
+  - creator-economy
+  - onlyfans-agency
+  - ai-economics
+license: MIT
+version: 1.0.0
+date-released: 2026-05-14
+preferred-citation:
+  type: article
+  title: "Operational Economics of AI-Augmented OnlyFans Talent Agencies (2026)"
+  authors:
+    - name: "Anlora"
+  year: 2026
+  doi: 10.5281/zenodo.20187816
+  url: "https://doi.org/10.5281/zenodo.20187816"

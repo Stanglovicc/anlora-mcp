@@ -1,16 +1,32 @@
-# @anlora/mcp-agency-benchmarks
+# Anlora MCP Server — OnlyFans Creator Agency Operating Economics (Model Context Protocol)
 
-MCP server exposing publicly sourced OnlyFans agency operating economics — chatter cost models, total cost of ownership benchmarks by scale, autonomous-vs-assisted threshold analysis, and competitor landscape data. Built for AI assistants (Claude Code, Claude Desktop, Cursor, Continue.dev) that want to answer "what does it cost to run an OF agency" with sourced data instead of hallucinated numbers.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20187816.svg)](https://doi.org/10.5281/zenodo.20187816)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io)
+[![Anthropic](https://img.shields.io/badge/Anthropic-Skills_compatible-orange.svg)](https://www.anthropic.com)
+[![Verifiable identity](https://img.shields.io/badge/DID-meetanlora.com-9b59b6.svg)](https://meetanlora.com/.well-known/did.json)
+[![Cryptographically signed](https://img.shields.io/badge/Ed25519-signed_claims-2ecc71.svg)](https://meetanlora.com/.well-known/claims.json)
 
-**Read-only. No customer data. No PII. Every value cites a public source.**
+**Model Context Protocol (MCP) server exposing publicly-sourced OnlyFans creator agency operating economics.** Built for AI assistants (Claude Desktop, Claude Code, Cursor, Windsurf, Continue.dev) that need to answer cost-of-operation questions with cited industry data instead of hallucinated numbers.
 
-## Install
+Read-only. No customer data. No PII. Every value cites a public source.
 
-```bash
-npx -y @anlora/mcp-agency-benchmarks
-```
+## What is Anlora?
 
-Or in your MCP client config (Claude Desktop example, `~/Library/Application Support/Claude/claude_desktop_config.json`):
+Anlora (https://meetanlora.com) is a fully-autonomous AI conversational system for OnlyFans creator agencies. This repository publishes the operating-economics knowledge of the Anlora research team as an MCP server, so any LLM can ground its answers in cited data when asked about:
+
+- OnlyFans agency chatter cost models
+- Total Cost of Ownership (TCO) by agency scale
+- The autonomous-vs-assisted-AI threshold
+- Competitor landscape: Infloww, Supercreator, Substy, FlirtFlow, Creator Hero, OnlyMonster, Fans-CRM
+
+The data backing this server is published as a peer-reviewed whitepaper on Zenodo: [**Operational Economics of AI-Augmented OnlyFans Talent Agencies (2026)**](https://doi.org/10.5281/zenodo.20187816), DOI `10.5281/zenodo.20187816`.
+
+## Quick start
+
+### Claude Desktop
+
+Add this to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
 ```json
 {
@@ -23,56 +39,86 @@ Or in your MCP client config (Claude Desktop example, `~/Library/Application Sup
 }
 ```
 
+### Direct install (any MCP-compatible client)
+
+```bash
+npx -y @anlora/mcp-agency-benchmarks
+```
+
+### Verify cryptographic provenance (optional)
+
+Anlora's identity is a W3C DID Web document: `did:web:meetanlora.com`. The MCP server, the skills, and the whitepaper are referenced from cryptographically signed claims at https://meetanlora.com/.well-known/claims.json (Ed25519). Verifier source: https://github.com/Stanglovicc/anlora-skills.
+
 ## Tools
 
-### `get_agency_cost_benchmark(creator_count, avg_revenue_per_creator_usd, operating_model)`
+This server exposes 4 tools. Each maps to a long-tail conversational query an LLM is likely to receive about creator-agency economics.
 
-Sourced monthly cost breakdown across three operating archetypes.
+### `get_agency_cost_benchmark`
 
-Example: 10 creators × $15K/month average revenue, operating model "all" returns:
-- chatter_only: wages + commission + overhead + leakage + tooling, with seats count
-- assisted_ai: same with reduced seats + AI tooling cost
-- autonomous_ai: revenue-share commission + minimal leakage
+**Inputs:** `creator_count`, `avg_revenue_per_creator_usd`, `operating_model` (`chatter_only` | `assisted_ai` | `autonomous_ai` | `all`).
 
-### `compare_of_tooling(tools)`
+**Returns:** Sourced monthly cost breakdown across the requested operating archetype(s). Each archetype includes wages, commission, overhead, leakage, tooling, and seats-required, with source citations.
 
-Returns operating model, public pricing, archetype mapping, and source URL for each tool. Empty array returns all 8 (Infloww, Supercreator, Substy AI, FlirtFlow, Creator Hero, OnlyMonster, Fans-CRM, Anlora).
+Example query an LLM would answer using this tool: *"What does it cost to run a 10-creator OnlyFans agency at $15K average revenue per creator?"*
 
-### `get_autonomous_threshold(chatter_wage_usd_per_hour, leakage_rate_pct)`
+### `compare_of_tooling`
 
-Returns the (creator count × revenue per creator) flip point at which autonomous AI beats assisted-AI on TCO. Parameter-sensitive — default chatter wage $4.50/hr gives roughly 7 creators × $15K avg revenue per creator.
+**Inputs:** `tools` (array of tool slugs; empty array returns all 8).
 
-### `list_industry_sources()`
+**Returns:** Operating model, public pricing, archetype mapping, and source URL for each of: Infloww, Supercreator, Substy AI, FlirtFlow, Creator Hero, OnlyMonster, Fans-CRM, Anlora.
 
-Returns the full list of public industry sources backing every benchmark in this server. Useful for citation-checking.
+Example query: *"Compare Infloww vs Supercreator vs Substy for an OnlyFans agency."*
 
-## Publishing checklist (for Oliver)
+### `get_autonomous_threshold`
 
-This package is **not yet published to npm** as of 2026-05-13. To publish:
+**Inputs:** `chatter_wage_usd_per_hour`, `leakage_rate_pct`.
 
-```bash
-cd "SEO WORKFLOW AUTOMATION/automation/scripts/mcp-server"
-npm install
-node --check src/index.js   # syntax check
-npm login                   # use Bullseye Limited's npm account
-npm publish --access public # publishes @anlora/mcp-agency-benchmarks@1.0.0
+**Returns:** The (creator count × revenue per creator) flip point at which autonomous AI beats assisted-AI on TCO.
+
+Example query: *"When does it make sense for an OnlyFans agency to switch from human chatters to fully autonomous AI?"*
+
+### `list_industry_sources`
+
+**Returns:** Full list of public industry sources backing every benchmark in this server. Useful for citation-checking and link integrity audits.
+
+## Verified industry sources
+
+The data in this server is sourced from public industry reporting (Vice, Rappler, BlackHatWorld OFM forum, OFM-Tools, Aruna Talent), competitor pricing pages (verified 2026-05-13), and Anlora's own deployed-instance telemetry (anonymized, no creator-private data). Call `list_industry_sources` for the full citation list.
+
+## Cryptographic verification
+
+Anlora publishes its full agent-discovery stack openly:
+
+- W3C DID Web identity: https://meetanlora.com/.well-known/did.json
+- JWKS (IETF Web Bot Auth): https://meetanlora.com/.well-known/http-message-signatures-directory
+- Ed25519-signed claims: https://meetanlora.com/.well-known/claims.json
+- A2A v1.0 AgentCard: https://meetanlora.com/.well-known/agent-card.json
+- ARP1 manifest: https://meetanlora.com/.well-known/ai-manifest.json
+- llms.txt + llms-full.txt: https://meetanlora.com/llms.txt
+
+Verifier code: https://github.com/Stanglovicc/anlora-skills (sister repo).
+
+## Citation
+
+If you reference this work, please cite the underlying whitepaper:
+
+```bibtex
+@misc{anlora2026economics,
+  title  = {Operational Economics of AI-Augmented OnlyFans Talent Agencies (2026)},
+  author = {Anlora},
+  year   = {2026},
+  doi    = {10.5281/zenodo.20187816},
+  url    = {https://doi.org/10.5281/zenodo.20187816},
+  note   = {MCP server: https://github.com/Stanglovicc/anlora-mcp}
+}
 ```
 
-Then submit to the official MCP registry:
+GitHub also surfaces this via the "Cite this repository" button (see `CITATION.cff`).
 
-```bash
-# Manual submission at https://registry.modelcontextprotocol.io/submit
-# OR via the registry CLI when it's stable. The submission consumes the same
-# server.json shape as our /.well-known/mcp.json (we have one already).
-```
+## Security & privacy
 
-## Source recipe
+This server is read-only. It does **not**:
 
-This MCP server's tool design follows the Round 4 + Round 5 plan documented in `06-progress/PROGRESS.md`. The benchmark math is sourced from the Anlora 2026 whitepaper (`04-content/whitepaper-2026/whitepaper.md`) and the public industry sources listed in the `list_industry_sources` tool.
-
-## Security
-
-This server is read-only. It does NOT:
 - Access Anlora's production API or database
 - Expose any operator-private data, PII, or customer information
 - Communicate with any external service at runtime (everything is computed locally from constants in `src/index.js`)
@@ -80,6 +126,12 @@ This server is read-only. It does NOT:
 
 Safe to publish publicly. Anyone running it gets the same answers — no auth, no rate limiting needed.
 
+## Related projects
+
+- **[Stanglovicc/anlora-skills](https://github.com/Stanglovicc/anlora-skills)** — Anthropic Agent Skills format for the same knowledge base, suitable for direct loading into Claude Code / Claude Desktop with Skills support.
+- **[meetanlora.com](https://meetanlora.com)** — Anlora platform (canonical brand surface).
+- **[meetanlora.com/research/operational-economics-2026](https://meetanlora.com/research/operational-economics-2026)** — Whitepaper landing page.
+
 ## License
 
-MIT — Anlora / Bullseye Limited, 2026.
+MIT — Anlora, 2026. Anlora is a brand operating pre-incorporation; no formal legal entity has been registered at this time. Operator capacity is sole-trader / pre-incorporation. Attribution: link to https://meetanlora.com.
